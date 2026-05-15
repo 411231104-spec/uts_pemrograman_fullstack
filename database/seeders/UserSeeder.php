@@ -12,25 +12,17 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::create([
-            'name'     => 'Admin Smart-Hub',
-            'email'    => 'admin@smarthub.com',
-            'password' => Hash::make('password123'),
+            'name'     => 'Anza Admin',
+            'email'    => 'anza@test.com',
+            'password' => Hash::make('admin123'),
             'role'     => 'admin',
         ]);
 
-        // Member 1
+        // Member
         User::create([
-            'name'     => 'Budi Santoso',
-            'email'    => 'budi@smarthub.com',
-            'password' => Hash::make('password123'),
-            'role'     => 'member',
-        ]);
-
-        // Member 2
-        User::create([
-            'name'     => 'Siti Rahayu',
-            'email'    => 'siti@smarthub.com',
-            'password' => Hash::make('password123'),
+            'name'     => 'Fiony Member',
+            'email'    => 'fiony@test.com',
+            'password' => Hash::make('member123'),
             'role'     => 'member',
         ]);
     }

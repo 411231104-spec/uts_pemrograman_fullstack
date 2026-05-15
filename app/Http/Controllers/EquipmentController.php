@@ -2,81 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Equipment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EquipmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $equipments = Equipment::all();
+        $equipments = Equipment::latest()->get();
         return view('equipments.index', compact('equipments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        if (!Auth::user()->isAdmin()) abort(403);
         return view('equipments.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-        'name' => 'required',
-        'stock' => 'required|integer',
-        'status' => 'required'
-    ]);
+        if (!Auth::user()->isAdmin()) abort(403);
 
-    Equipment::create([
-        'name' => $request->name,
-        'description' => $request->description,
-        'stock' => $request->stock,
-        'status' => $request->status
-    ]);
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'status'      => 'required|in:available,borrowed,maintenance',
+        ], [
+            'name.required'   => 'Nama peralatan wajib diisi.',
+            'stock.required'  => 'Jumlah stok wajib diisi.',
+            'status.required' => 'Status wajib dipilih.',
+        ]);
 
-    return redirect()->route('equipments.index');
+        Equipment::create($validated);
+
+        return redirect()->route('equipments.index')
+            ->with('success', 'Peralatan berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        if (!Auth::user()->isAdmin()) abort(403);
+        $equipment = Equipment::findOrFail($id);
+        return view('equipments.edit', compact('equipment'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        if (!Auth::user()->isAdmin()) abort(403);
+
+        $equipment = Equipment::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'status'      => 'required|in:available,borrowed,maintenance',
+        ]);
+
+        $equipment->update($validated);
+
+        return redirect()->route('equipments.index')
+            ->with('success', 'Peralatan berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
+        if (!Auth::user()->isAdmin()) abort(403);
         $equipment = Equipment::findOrFail($id);
         $equipment->delete();
 
-        return redirect()->route('equipments.index');
+        return redirect()->route('equipments.index')
+            ->with('success', 'Peralatan berhasil dihapus.');
     }
 }
