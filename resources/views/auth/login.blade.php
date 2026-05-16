@@ -234,7 +234,7 @@
                 <div class="col-6">
                     <div class="demo-badge">
                         <strong>Member Access</strong>
-                        <span>sheva@test.com</span>
+                        <span>fiony@test.com</span>
                         <div class="pass">member123</div>
                     </div>
                 </div>
